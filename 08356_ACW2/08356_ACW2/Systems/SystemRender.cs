@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -12,7 +10,7 @@ namespace OpenGL_Game.Systems
 {
     class SystemRender : ISystem
     {
-        const ComponentTypes MASK = (ComponentTypes.COMPONENT_TRANSFORM | ComponentTypes.COMPONENT_GEOMETRY | ComponentTypes.COMPONENT_TEXTURE);
+        const ComponentTypes MASK = ComponentTypes.COMPONENT_TRANSFORM | ComponentTypes.COMPONENT_GEOMETRY | ComponentTypes.COMPONENT_TEXTURE;
 
         protected int pgmID;
         protected int vsID;
@@ -58,7 +56,7 @@ namespace OpenGL_Game.Systems
             get { return "SystemRender"; }
         }
 
-        public void OnAction(Entity entity)
+        public void OnAction(Entity entity, Entity player)
         {
             if ((entity.Mask & MASK) == MASK)
             {
@@ -74,11 +72,6 @@ namespace OpenGL_Game.Systems
                 {
                     return component.ComponentType == ComponentTypes.COMPONENT_TRANSFORM;
                 });
-                Vector3 position = ((ComponentTransform)transfromComponent).Position;
-                Vector3 rot = ((ComponentTransform)transfromComponent).Rotation;
-                Vector3 scale = ((ComponentTransform)transfromComponent).Scale;
-               
-                Matrix4 world = Matrix4.CreateScale(scale) * Matrix4.CreateRotationX(rot.X) * Matrix4.CreateRotationY(rot.Y) * Matrix4.CreateRotationZ(rot.Z) * Matrix4.CreateTranslation(position);
                
                 IComponent textureComponent = components.Find(delegate(IComponent component)
                 {
@@ -86,11 +79,11 @@ namespace OpenGL_Game.Systems
                 });
                 int texture = ((ComponentTexture)textureComponent).Texture.Texture_ID;
 
-                Draw(world, geometry, texture);
+                Draw((ComponentTransform)transfromComponent, geometry, texture);
             }
         }
 
-        public void Draw(Matrix4 world, Geometry geometry, int texture)
+        public void Draw(ComponentTransform transform, Geometry geometry, int texture)
         {
             GL.CullFace(CullFaceMode.Back);
             GL.UseProgram(pgmID);
@@ -100,7 +93,9 @@ namespace OpenGL_Game.Systems
             GL.BindTexture(TextureTarget.Texture2D, texture);
             GL.Enable(EnableCap.Texture2D);
 
-            Matrix4 worldViewProjection = world * MyGame.gameInstance.view * MyGame.gameInstance.projection;
+            Vector3 rot = transform.Rotation;
+            transform.WorldMatrix = Matrix4.CreateScale(transform.Scale) * Matrix4.CreateRotationX(rot.X) * Matrix4.CreateRotationY(rot.Y) * Matrix4.CreateRotationZ(rot.Z) * Matrix4.CreateTranslation(transform.Position);
+            Matrix4 worldViewProjection = transform.WorldMatrix * MyGame.gameInstance.view * MyGame.gameInstance.projection;
             GL.UniformMatrix4(uniform_mview, false, ref worldViewProjection);
 
             geometry.Render();

@@ -55,8 +55,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Components\ComponentGeometry.cs" />
+    <Compile Include="Components\ComponentPhysics.cs" />
     <Compile Include="Components\ComponentTexture.cs" />
     <Compile Include="Components\ComponentTransform.cs" />
+    <Compile Include="Components\ComponentWallCollsion.cs" />
     <Compile Include="Objects\Entity.cs" />
     <Compile Include="Managers\EntityManager.cs" />
     <Compile Include="Objects\Geometry.cs" />
@@ -68,7 +70,10 @@
     <Compile Include="Managers\ResourceManager.cs" />
     <Compile Include="Systems\ISystem.cs" />
     <Compile Include="Managers\SystemManager.cs" />
+    <Compile Include="Systems\SystemPhysics.cs" />
     <Compile Include="Systems\SystemRender.cs" />
+    <Compile Include="Systems\SystemWallCollsion.cs" />
+    <Compile Include="Utilites\Timer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="OpenTK, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
@@ -85,13 +90,7 @@
     <None Include="Geometry\Cube.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Geometry\SquareGeometry.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Geometry\TextureSphereTri.obj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Geometry\TriangleGeometry.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="OpenTK.dll.config" />
@@ -129,6 +128,17 @@
       <ProductName>Windows Installer 4.5</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Geometry\modelFile.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Geometry\TextureFile.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Textures\wallTexture.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <!-- Specify the search path explicitly so the ResolveAssemblyReferences task picks the right ones -->
   <Target Name="BeforeResolveReferences">

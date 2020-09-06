@@ -9,6 +9,7 @@ using OpenGL_Game.Managers;
 using OpenGL_Game.Objects;
 using OpenTK.Graphics;
 using System.IO;
+using OpenGL_Game.Utilites;
 
 namespace OpenGL_Game
 {
@@ -44,16 +45,18 @@ namespace OpenGL_Game
         {
             Entity newEntity;
 
-            newEntity = new Entity("sphere");
-            newEntity.AddComponent(new ComponentTransform(new Vector3(-1.0f, 0.0f, -3.0f), new Vector3(0,0,0), new Vector3(.5f,.5f,.5f)));
+            newEntity = new Entity("Sphere");
+            newEntity.AddComponent(new ComponentTransform(new Vector3(3, 0.0f, 4), new Vector3(0,0,0), new Vector3(1,1,1)));
             newEntity.AddComponent(new ComponentGeometry(ResourceManager.FindGeometry(newEntity.Name)));
             newEntity.AddComponent(new ComponentTexture(ResourceManager.FindTexture("ship")));
+            newEntity.AddComponent(new ComponentPhysics());
             entityManager.AddEntity(newEntity);
 
             newEntity = new Entity("Cube");
             newEntity.AddComponent(new ComponentTransform(new Vector3(0, 0.0f, 0), new Vector3(0, 0, 0), new Vector3(1, 1, 1)));
             newEntity.AddComponent(new ComponentGeometry(ResourceManager.FindGeometry(newEntity.Name)));
-            newEntity.AddComponent(new ComponentTexture(ResourceManager.FindTexture("ship")));
+            newEntity.AddComponent(new ComponentTexture(ResourceManager.FindTexture("wall")));
+            newEntity.AddComponent(new ComponentWallCollsion());
             entityManager.AddEntity(newEntity);
         }
 
@@ -63,35 +66,38 @@ namespace OpenGL_Game
 
             newSystem = new SystemRender();
             systemManager.AddSystem(newSystem);
+
+            newSystem = new SystemPhysics();
+            systemManager.AddSystem(newSystem);
+
+            newSystem = new SystemWallCollsion();
+            systemManager.AddSystem(newSystem);
+
         }
-        private void CreateGeometry()
+        private void CreateResorces()
         {
-            ResourceManager.LoadGeometry("sphere", "Geometry/TextureSphereTri.obj");
-            ResourceManager.LoadGeometry("Cube", "Geometry/Cube.obj");
-            //using (StreamReader modelSR = new StreamReader(@"Utility/Models/modelFile.txt"))
-            //{
-            //    List<string> fileList = new List<string>();
-            //    while (modelSR.Peek() > -1)
-            //    {
-            //        string line = modelSR.ReadLine();
-            //        string[] result = line.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-            //        fileList.Add(result[0]);
-            //    }
+            using (StreamReader modelSR = new StreamReader(@"Geometry/modelFile.txt"))
+            {
+               
+                while (modelSR.Peek() > -1)
+                {
+                    string line = modelSR.ReadLine();
+                    string[] result = line.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                    ResourceManager.LoadGeometry(result[0], $"Geometry/{result[1]}");
+                }
+            }
 
-            //    for (int i = 0; i < fileList.Count; i++)
-            //    {
-            //        string[] splitStrings = fileList[i].Split(' ');
+            using (StreamReader textureSR = new StreamReader(@"Geometry/TextureFile.txt"))
+            {
 
-            //       // vertexBuffers.Add(mVAO_ID[i], splitStrings[0]);
-            //    }
-            //}
+                while (textureSR.Peek() > -1)
+                {
+                    string line = textureSR.ReadLine();
+                    string[] result = line.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                    ResourceManager.LoadTexture(result[0], $"Textures/{result[1]}");
+                }
+            }
         }
-
-        private void CreateTextures()
-        {
-            ResourceManager.LoadTexture("ship", "Textures/spaceship.png");
-        }
-
 
         protected override void OnResize(EventArgs e)
         {
@@ -124,15 +130,17 @@ namespace OpenGL_Game
             base.OnLoad(e);
             GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             GL.Enable(EnableCap.CullFace);
+            GL.Enable(EnableCap.DepthTest); 
             view = Matrix4.LookAt(new Vector3(0, 0, 3), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
+            view = Matrix4.CreateTranslation(0, 0, -8);
             projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45), 800f / 480f, 0.01f, 100f);
 
-            CreateGeometry();
-            CreateTextures();
+            CreateResorces();
             CreateEntities();
             CreateSystems();
 
             // TODO: Add your initialization logic here
+            Timer.Start();
         }
 
         /// <summary>

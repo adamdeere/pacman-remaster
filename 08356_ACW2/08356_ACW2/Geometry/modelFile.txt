@@ -1,0 +1,3 @@
+﻿Cube Cube.obj
+Cylinder TextureCylinderTri.obj
+Sphere TextureSphereTri.obj

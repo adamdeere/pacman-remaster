@@ -8,10 +8,11 @@ namespace OpenGL_Game.Components
 {
     class ComponentTransform : IComponent
     {
-        Vector3 position;
-        Vector3 rotation;
-        Vector3 scale;
-
+        private Vector3 position;
+        private Vector3 oldPosition;
+        private Vector3 rotation;
+        private Vector3 scale;
+        private Matrix4 world;
         public ComponentTransform(Vector3 pos, Vector3 rot, Vector3 scale)
         {
             position = pos;
@@ -19,15 +20,22 @@ namespace OpenGL_Game.Components
             this.scale = scale; 
         }
 
-        public ComponentTransform(Vector3 pos)
+        public Matrix4 WorldMatrix
         {
-            position = pos;
+            get { return world; }
+            set { world = value; }
         }
 
         public Vector3 Position
         {
             get { return position; }
             set { position = value; }
+        }
+
+        public Vector3 OldPosition
+        {
+            get { return oldPosition; }
+            set { oldPosition = value; }
         }
         public Vector3 Rotation
         {

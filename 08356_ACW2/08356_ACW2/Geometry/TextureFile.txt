@@ -1,0 +1,2 @@
+﻿wall wallTexture.jpg
+ship spaceship.png

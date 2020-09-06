@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using OpenGL_Game.Systems;
 using OpenGL_Game.Objects;
 
@@ -23,7 +19,7 @@ namespace OpenGL_Game.Managers
             {
                 foreach(Entity entity in entityList)
                 {
-                    system.OnAction(entity);
+                    system.OnAction(entity, entityManager.FindEntity("Sphere"));
                 }
             }
         }
